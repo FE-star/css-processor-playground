@@ -1,6 +1,6 @@
 function t(arr) {
-  const [s] = arr
-  return s.trim()
+  const [s] = arr;
+  return s.trim();
 }
 
 const variable_s = t`
@@ -12,7 +12,7 @@ body {
   border: 1px $borderStyle $mainColor;
   max-width: $siteWidth;
 }
-`
+`;
 const variable_l = t`
 @mainColor: #0982c1;
 @siteWidth: 1024px;
@@ -22,7 +22,7 @@ body {
   border: 1px @borderStyle @mainColor;
   max-width: @siteWidth;
 }
-`
+`;
 const nesting = t`
 section {
   margin: 10px;
@@ -36,7 +36,7 @@ section {
     }
   }
 }
-`
+`;
 
 const mixins_s = t`
 /* Sass定义了一个名叫error的mixin，这个error设置了一个参数“$borderWidth”,在没特别定义外，这个参数的值是默认值2px*/
@@ -55,7 +55,7 @@ const mixins_s = t`
   top: 20px;
   @include error(5px); /* 调用error mixins，并将参数$borderWidth的值指定为5px*/
 }
-`
+`;
 
 const mixins_l = t`
 /* LESS 定义了一个名叫error的mixin，这个error设置了一个参数“$borderWidth”,在没特别定义外，这个参数的值是默认值2px */
@@ -74,7 +74,7 @@ const mixins_l = t`
   top: 20px;
   .error(5px); /* 调用error mixins，并将参数$borderWidth的值指定为5px */
 }
-`
+`;
 
 const inheritance_s = t`
 .block {
@@ -90,7 +90,7 @@ ul, ol {
   color: #333;
   text-transform: uppercase;
 }
-`
+`;
 
 const inheritance_l = t`
 .block {
@@ -106,7 +106,7 @@ ul, ol {
   color: #333;
   text-transform: uppercase;
 }
-`
+`;
 
 const prefix_s = t`
 @mixin border-radius($values) {
@@ -117,7 +117,7 @@ const prefix_s = t`
 div {
   @include border-radius(10px);
 }
-`
+`;
 
 const prefix_l = t`
 .border-radius(@values) {
@@ -128,7 +128,7 @@ const prefix_l = t`
 div {
   .border-radius(10px);
 }
-`
+`;
 
 const text3d_s = t`
 @mixin text3d($color) {
@@ -143,7 +143,7 @@ h1 {
   font-size: 32pt;
   @include text3d(#0982c1);
 }
-`
+`;
 
 const text3d_l = t`
 .text3d(@color) {
@@ -158,7 +158,7 @@ span {
   font-size: 32pt;
   .text3d(#0982c1);
 }
-`
+`;
 
 const columns_s = t`
 $siteWidth: 1024px;
@@ -177,7 +177,7 @@ body {
   margin-left: $gutterWidth;
   width: $sidebarWidth;
 }
-`
+`;
 
 const columns_l = t`
 @siteWidth: 1024px;
@@ -196,7 +196,7 @@ body {
   margin-left: @gutterWidth;
   width: @sidebarWidth;
 }
-`
+`;
 
 const dv_s = t`
 $color: black;
@@ -211,7 +211,7 @@ $color: black;
   // Would be an error
   // background: $bg;
 } 
-`
+`;
 
 const dv_l = t`
 @color: black;
@@ -226,7 +226,7 @@ const dv_l = t`
   // Would be an error
   // background: @bg;
 }
-`
+`;
 
 const ifelse_s = t`
 @mixin bw($color) {
@@ -241,7 +241,7 @@ const ifelse_s = t`
 .bg {
   @include bw(blue);
 }
-`
+`;
 
 const ifelse_l = t`
 .bw (@color) when (lightness(@color) > 30%) {
@@ -254,7 +254,7 @@ const ifelse_l = t`
 .bg {
   .bw(blue);
 }
-`
+`;
 
 export default {
   variable: {
@@ -292,5 +292,5 @@ export default {
   ifelse: {
     scss: ifelse_s,
     less: ifelse_l,
-  }
-}
+  },
+};
