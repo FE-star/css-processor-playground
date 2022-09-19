@@ -12,6 +12,9 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+  optimizeDeps: {
+    include: ["./node_modules/postcss"],
+  },
   server: {
     proxy: {
       "/api": {
