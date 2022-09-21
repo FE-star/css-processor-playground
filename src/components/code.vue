@@ -25,7 +25,6 @@ self.MonacoEnvironment = {
 };
 const props = defineProps({
   value: String,
-  lang: String,
 });
 const emit = defineEmits(["change"]);
 
@@ -34,7 +33,7 @@ onMounted(() => {
   const { root } = instance.refs;
   const editor = monaco.editor.create(root, {
     value: props.value,
-    language: props.lang || "css",
+    language: "scss",
     fontSize: 15,
     theme: "vs-dark",
   });

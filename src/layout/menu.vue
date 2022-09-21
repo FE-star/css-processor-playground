@@ -1,32 +1,23 @@
 <script setup>
 import { ref } from "vue";
 
-// const plugins = ref([]);
-
-// const optionalPlugins = [
-//   { value: "autoprefixer", label: "autoprefixer" },
-//   { value: "hwb2rgb", label: "postcss-color-hwb" },
-// ];
-
-const emit = defineEmits(["compile", "postcssPluginChange"]);
+const active = ref("directory");
+const emit = defineEmits(["compile"]);
 
 // 开始编译
 function compile(e) {
   emit("compile");
+  active.value = "compile";
 }
-
-// // postcss插件变化
-// function postcssPluginChange(command) {
-//   emit("postcssPluginChange");
-// }
 </script>
 
 <template>
   <div class="menu">
     <el-button
       class="button directory"
+      :class="{active: active === 'directory'}"
       link
-      @click="compile"
+      @click="() => active = 'directory'"
     >
       <el-icon>
         <CopyDocument />
@@ -34,8 +25,9 @@ function compile(e) {
     </el-button>
     <el-button
       class="button search"
+      :class="{active: active === 'search'}"
       link
-      @click="compile"
+      @click="() => active = 'search'"
     >
       <el-icon>
         <Search />
@@ -43,6 +35,7 @@ function compile(e) {
     </el-button>
     <el-button
       class="button compile"
+      :class="{active: active === 'compile'}"
       link
       @click="compile"
     >
@@ -63,6 +56,9 @@ function compile(e) {
   font-size: 26px;
   height: 6vh;
   margin-left: 5px;
+}
+.menu .button.active {
+  color: #f2f2f2;
 }
 .menu .button:focus,
 .menu .button:hover {

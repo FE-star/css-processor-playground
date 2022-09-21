@@ -1,7 +1,9 @@
 <script setup>
-import { ref, getCurrentInstance, onMounted } from "vue";
+import { ref, getCurrentInstance, onMounted, watch } from "vue";
 
-const instance = getCurrentInstance();
+const props = defineProps({
+  dist: String,
+});
 const filetype = {
   file: "文件",
   dir: "文件夹",
@@ -10,12 +12,19 @@ const defaultProps = {
   children: "children",
   label: "label",
   isLeaf: "isLeaf",
+  children: "children",
 };
-
-const treeData = ref([
+const emit = defineEmits(["treeDatasChange", "currentFileChange"]);
+const instance = getCurrentInstance();
+const treeDatas = ref([
   {
     label: "main.scss",
     path: "/main.scss",
+    isLeaf: true,
+  },
+  {
+    label: "_test.scss",
+    path: "/_test.scss",
     isLeaf: true,
   },
 ]);
@@ -24,18 +33,41 @@ const filename = ref("");
 const addtype = ref("");
 const dialogVisible = ref(false);
 
+watch(
+  () => props.dist || "",
+  (value) => {
+    if (value.trim()) {
+      const { tree } = instance.refs;
+      tree.insertBefore(
+        {
+          label: "dist.css",
+          isLeaf: true,
+          path: "/dist.css",
+        },
+        "/main.scss"
+      );
+    }
+  }
+);
 // 新增文件/文件夹
-function addFile(e) {
+function addFile() {
+  const rge = /\/[\w.-_]+.scss$/;
   const { tree } = instance.refs;
   const currentNode = tree.getCurrentNode();
+  let label = filename.value;
+  if (addtype.value === "file") {
+    label = `_${filename.value}.scss`;
+  }
+  // 选中的文件路径去掉文件名，得到文件夹路径
+  const parent = currentNode.path.replace(rge, "");
+  const path = parent + "/" + label;
+
   const newNode = {
     isLeaf: addtype.value === "file",
-    label: `${filename.value}${addtype.value === "file" ? ".scss" : ""}`,
-    parent: currentNode.path.replace(/\/[\w.-_]+$/, ""),
-    path: currentNode.path.replace(
-      /\/[\w.-_]+.scss$/,
-      `/${filename.value}${addtype.value === "file" ? ".scss" : ""}`
-    ),
+    label,
+    parent,
+    path,
+    current: true,
   };
   // 如果是文件，就在下面新增一个文件
   if (currentNode.isLeaf) {
@@ -43,7 +75,6 @@ function addFile(e) {
   } else {
     tree.append(newNode, currentNode);
   }
-  treeData.value.push(newNode);
   dialogVisible.value = false;
   filename.value = "";
 }
@@ -58,12 +89,19 @@ const showDialog = (type) => {
 const load = (node, resolve) => {
   resolve(
     !node.parent
-      ? treeData.value
-      : treeData.value.filter((treenode) => {
+      ? treeDatas.value
+      : treeDatas.value.filter((treenode) => {
           return (treenode.parent = node.path);
         })
   );
 };
+
+// 点击树节点，如果是文件，就在右侧打开
+function handleNodeClick(node) {
+  if (node.isLeaf) {
+    emit("currentFileChange", node);
+  }
+}
 
 onMounted(() => {
   const { tree } = instance.refs;
@@ -107,7 +145,7 @@ function foldDir(value) {}
     <div class="files">
       <el-tree
         ref="tree"
-        :data="treeData"
+        :data="treeDatas"
         :load="load"
         :lazy="true"
         node-key="path"
