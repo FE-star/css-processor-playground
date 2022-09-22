@@ -27,15 +27,15 @@ const dist = ref("");
 const openfiles = ref([
   {
     label: "main.scss",
-    path: "/main.scss",
+    path: "/main",
     isLeaf: true,
     current: true,
   },
 ]);
 // 存储所有代码，内容和
 const sassCodes = ref({
-  "/main.scss": initCode,
-  "/_test.scss": `$bodyColor: #fff;
+  "/main": initCode,
+  "/test": `$bodyColor: #fff;
 .breadcrumb {
   padding: 0;
   margin-bottom: 0;
@@ -60,7 +60,7 @@ const sassCodes = ref({
 async function compile() {
   loading.value = true;
   dist.value = await compileScss(toRaw(sassCodes.value));
-  sassCodes.value["/dist.css"] = dist.value;
+  sassCodes.value["/dist"] = dist.value;
   loading.value = false;
 }
 

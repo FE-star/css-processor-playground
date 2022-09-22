@@ -19,12 +19,12 @@ const instance = getCurrentInstance();
 const treeDatas = ref([
   {
     label: "main.scss",
-    path: "/main.scss",
+    path: "/main",
     isLeaf: true,
   },
   {
     label: "_test.scss",
-    path: "/_test.scss",
+    path: "/test",
     isLeaf: true,
   },
 ]);
@@ -42,38 +42,71 @@ watch(
         {
           label: "dist.css",
           isLeaf: true,
-          path: "/dist.css",
+          path: "/dist",
         },
-        "/main.scss"
+        "/main"
       );
     }
   }
 );
-// 新增文件/文件夹
-function addFile() {
-  const rge = /\/[\w.-_]+.scss$/;
+
+// 修改目录树
+function updateTree(data) {
   const { tree } = instance.refs;
   const currentNode = tree.getCurrentNode();
-  let label = filename.value;
-  if (addtype.value === "file") {
-    label = `_${filename.value}.scss`;
+  if (currentNode.isLeaf) {
+    // 去掉文件名就是文件路径
+    data.parentPath = currentNode.path.replace(/\/[\w]+$/, "");
+    tree.insertAfter(data, currentNode);
+  } else {
+    data.parentPath = currentNode.path;
+    tree.append(data, currentNode);
   }
-  // 选中的文件路径去掉文件名，得到文件夹路径
-  const parent = currentNode.path.replace(rge, "");
-  const path = parent + "/" + label;
+}
 
-  const newNode = {
-    isLeaf: addtype.value === "file",
-    label,
-    parent,
-    path,
+// 获取文件夹对象  name=test ->  path= /test/test/
+function addDir(dirname, parentPath) {
+  const name = dirname.replace(/^\/+/, "");
+  const dir = {
+    isLeaf: false,
+    label: name,
+    parent: parentPath,
+    path: parentPath + "/" + name,
     current: true,
   };
-  // 如果是文件，就在下面新增一个文件
+  updateTree(dir);
+}
+
+// 获取文件对象 name=_test.scss ->  path= /test/test
+function addFile(filename, parentPath) {
+  const { tree } = instance.refs;
+  let name = filename.replace(/^(\/|\/_)+/, "");
+  const file = {
+    isLeaf: true,
+    label: `_${name}.scss`,
+    parent: parentPath,
+    path: parentPath + "/" + name,
+    current: true,
+  };
+  updateTree(file);
+}
+
+// 新增文件/文件夹
+function add() {
+  const { tree } = instance.refs;
+  const name = filename.value;
+  const currentNode = tree.getCurrentNode();
+  let parentPath = "";
   if (currentNode.isLeaf) {
-    tree.insertAfter(newNode, currentNode);
+    // 去掉文件名就是文件路径
+    parentPath = currentNode.path.replace(/\/[\w]+$/, "");
   } else {
-    tree.append(newNode, currentNode);
+    parentPath = currentNode.path;
+  }
+  if (addtype.value === "file") {
+    addFile(name, parentPath);
+  } else {
+    addDir(name, parentPath);
   }
   dialogVisible.value = false;
   filename.value = "";
@@ -164,7 +197,7 @@ function foldDir(value) {}
           <el-button @click="dialogVisible = false">Cancel</el-button>
           <el-button
             type="primary"
-            @click="addFile"
+            @click="add"
           >Confirm</el-button>
         </span>
       </template>
